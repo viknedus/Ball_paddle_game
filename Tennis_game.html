@@ -1,0 +1,105 @@
+<html>
+    
+    <canvas id="gameCanvas" width="800" height="600"> <!-- window inside a browser the game will run -->
+    
+    </canvas>
+    
+    
+    
+    <script> // JS coding
+        
+        /*Grab HTML Canvas for use within JS
+        Note: var stands for variable */
+        var canvas; //Handle game window dimentions
+        var canvasContext; //Handle graphiical information inside game window
+        
+        var ballX = 50; //ball variable at x axis ie. height position in px
+        var ballSpeedX = 1; //ball varriable speed at x axis per px
+        
+        var ballY = 50; //ball variable at y axis ie. height position in px
+        var ballSpeedY = 1; //ball varriable speed at y axis per px
+        
+        // Declare variable for mouse to move with paddles
+        var paddle1Y = 250;
+        var paddle1X = 50;
+        var paddle2Y = 250;
+        var paddle2X = 750;
+        const PADDLE_HEIGHT = 80;
+        
+        window.onload = function(){ /* when this function is called, it allows the browser to load fully before excuting JS code in {} brackets */
+            console.log("Hello World!"); // displays on browser consoles in developer tools
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d'); // Get 2D graphical interface
+            
+            /* 
+            drawEverything(); // function call 
+            */
+            
+            setInterval(callBoth, -10); //time interval (in secs) object (ballX) moves inside canvas is set
+            
+            /* Set paddle's position value whenever mouse moves */
+            canvas.addEventListener('mousemove', function(evt) { var mousePos = calcMousePos(evt); paddle1Y = mousePos.y - (PADDLE_HEIGHT/2); }); /* Align the paddle's center on the mouse's Y position */
+            
+        }
+        
+        function callBoth(){ moveEverything(); drawEverything(); } //function calls both moveEverything and drawEverything
+        
+        
+        /* This function is called & used inside drawEverything() */
+        function colorRect(leftX, topY, width, height, drawColor){
+            canvasContext.fillStyle = drawColor;
+            canvasContext.fillRect(leftX, topY, width, height)
+        }
+        
+        /* Code to use mouse control paddle */
+        function calcMousePos(evt){
+            var rect = canvas.getBoundingClientRect();
+            var root = document.documentElement;
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop; 
+            return{ x:mouseX, y:mouseY }
+        }
+        
+        /* Function that resets the ball */
+        function ballReset(){
+            ballSpeedX = -ballSpeedX; //ball bounces off the left edge of canvas
+            ballX = canvas.width/2; //ball resets when it touches left edge of canvas
+            ballY = canvas.height/2;
+        }
+        
+        /* Code to move ball in canvas */
+        function moveEverything(){
+            ballX = ballX + ballSpeedX; //the numbers are mesured in px. It increases at every 1px
+            ballY = ballY + ballSpeedY; //the numbers are mesured in px. It increases at every 1px
+            
+            /* 
+            ballSpeedX = ballSpeedX + 1; //increases the ball speed by 1 at every px 
+            */
+            
+            /* if else statement bounces the ball back if it gets blocked by left paddle */
+            if(ballX < 0) { if (ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT) { ballSpeedX = -ballSpeedX; } else { ballReset(); } } 
+            
+            if(ballX > canvas.width) { if (ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT) { ballSpeedX = -ballSpeedX; } else { ballReset(); } } //ball bounces off right edge of canvas
+            
+            if(ballY < 0) { ballSpeedY = -ballSpeedY; } //ball bounces off the left edge of canvas
+            if(ballY > canvas.height) { ballSpeedY = -ballSpeedY; } //ball bounces off right edge of canvas
+        }
+        
+        function drawEverything(){
+            /*
+            canvasContext.fillStyle = 'black'; // Fill canvas window with black color
+            canvasContext.fillRect() // Get width & height of canvas window 
+            The code in this comment is simpliified below with colorRect() function.
+            */
+            colorRect(0, 0, canvas.width, canvas.height, 'black');
+            
+            // ball and paddles
+            colorRect(paddle2X, paddle2Y, 10, PADDLE_HEIGHT, 'white'); //right paddle
+            colorRect(paddle1X, paddle1Y, 10, PADDLE_HEIGHT, 'white'); //left paddle
+            colorRect(ballX, ballY, 15, 15, 'red'); //ball
+            
+        }
+        
+    </script>
+
+</html>
